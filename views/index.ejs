@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCP Foundation Forum</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="scp-theme">
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="/images/scp-logo.png" alt="SCP Foundation">
+                <h1>Форум Фонда SCP</h1>
+            </div>
+            <div class="nav-links">
+                <% if (user) { %>
+                    <a href="/profile/<%= user.id %>">Профиль</a>
+                    <% if (user.role === 'admin') { %>
+                        <a href="/admin">Панель администратора</a>
+                    <% } %>
+                    <a href="/logout">Выйти</a>
+                <% } else { %>
+                    <a href="/login">Войти</a>
+                    <a href="/register">Регистрация</a>
+                <% } %>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="forum-categories">
+            <h2>Категории</h2>
+            <div class="category">
+                <h3>Обсуждение аномалий</h3>
+                <p>Обсуждение различных SCP объектов и аномалий</p>
+            </div>
+            <div class="category">
+                <h3>Протоколы содержания</h3>
+                <p>Обсуждение протоколов и процедур содержания</p>
+            </div>
+            <div class="category">
+                <h3>Исследования</h3>
+                <p>Научные исследования и эксперименты</p>
+            </div>
+        </div>
+
+        <div class="recent-topics">
+            <h2>Последние темы</h2>
+            <div class="topic-list">
+                <!-- Здесь будет динамический контент -->
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© SCP Foundation Forum. Все права защищены.</p>
+        <p class="disclaimer">Внимание: Весь контент на этом форуме является конфиденциальным и предназначен только для авторизованного персонала Фонда.</p>
+    </footer>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html> 

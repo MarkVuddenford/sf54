@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель администратора - SCP Foundation Forum</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="scp-theme">
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="/images/scp-logo.png" alt="SCP Foundation">
+                <h1>Панель администратора</h1>
+            </div>
+            <div class="nav-links">
+                <a href="/">Главная</a>
+                <a href="/profile/<%= user.id %>">Мой профиль</a>
+                <a href="/logout">Выйти</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="admin-container">
+        <div class="admin-sidebar">
+            <h3>Управление</h3>
+            <ul>
+                <li><a href="#users" class="active">Пользователи</a></li>
+                <li><a href="#topics">Темы</a></li>
+                <li><a href="#reports">Жалобы</a></li>
+                <li><a href="#logs">Логи</a></li>
+            </ul>
+        </div>
+
+        <div class="admin-content">
+            <section id="users" class="admin-section">
+                <h2>Управление пользователями</h2>
+                <div class="search-box">
+                    <input type="text" id="userSearch" placeholder="Поиск пользователей...">
+                </div>
+                <div class="user-list">
+                    <!-- Здесь будет динамический контент -->
+                </div>
+            </section>
+
+            <section id="topics" class="admin-section" style="display: none;">
+                <h2>Управление темами</h2>
+                <div class="search-box">
+                    <input type="text" id="topicSearch" placeholder="Поиск тем...">
+                </div>
+                <div class="topic-list">
+                    <!-- Здесь будет динамический контент -->
+                </div>
+            </section>
+
+            <section id="reports" class="admin-section" style="display: none;">
+                <h2>Жалобы</h2>
+                <div class="reports-list">
+                    <!-- Здесь будет динамический контент -->
+                </div>
+            </section>
+
+            <section id="logs" class="admin-section" style="display: none;">
+                <h2>Логи системы</h2>
+                <div class="logs-list">
+                    <!-- Здесь будет динамический контент -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Модальное окно для действий с пользователем -->
+    <div id="userActionModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Действия с пользователем</h3>
+            <div class="action-buttons">
+                <button class="btn-warning" id="muteUserBtn">Мут</button>
+                <button class="btn-danger" id="banUserBtn">Бан</button>
+                <button class="btn-primary" id="changeRoleBtn">Изменить роль</button>
+                <button class="btn-secondary" id="addTimeBtn">Добавить время</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Переключение между разделами
+        document.querySelectorAll('.admin-sidebar a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = e.target.getAttribute('href').substring(1);
+                
+                // Скрыть все разделы
+                document.querySelectorAll('.admin-section').forEach(section => {
+                    section.style.display = 'none';
+                });
+                
+                // Показать выбранный раздел
+                document.getElementById(targetId).style.display = 'block';
+                
+                // Обновить активную ссылку
+                document.querySelectorAll('.admin-sidebar a').forEach(a => {
+                    a.classList.remove('active');
+                });
+                e.target.classList.add('active');
+            });
+        });
+
+        // Загрузка списка пользователей
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/admin/users');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const userList = document.querySelector('.user-list');
+                    userList.innerHTML = data.users.map(user => `
+                        <div class="user-item">
+                            <div class="user-info">
+                                <span class="username">${user.username}</span>
+                                <span class="role">${user.role}</span>
+                            </div>
+                            <div class="user-actions">
+                                <button class="btn-action" onclick="showUserActions(${user.id})">Действия</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Ошибка при загрузке пользователей:', error);
+            }
+        }
+
+        // Показать модальное окно действий
+        function showUserActions(userId) {
+            const modal = document.getElementById('userActionModal');
+            modal.style.display = 'block';
+            
+            // Сохранить ID пользователя для действий
+            modal.dataset.userId = userId;
+        }
+
+        // Обработчики действий с пользователем
+        document.getElementById('muteUserBtn')?.addEventListener('click', async () => {
+            const userId = document.getElementById('userActionModal').dataset.userId;
+            const duration = prompt('Введите длительность мута в минутах:');
+            
+            if (duration) {
+                try {
+                    const response = await fetch('/api/admin/mute', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId,
+                            duration: parseInt(duration)
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        alert('Пользователь замучен');
+                        loadUsers();
+                    } else {
+                        alert(data.error || 'Ошибка при муте пользователя');
+                    }
+                } catch (error) {
+                    alert('Ошибка при муте пользователя');
+                }
+            }
+        });
+
+        document.getElementById('banUserBtn')?.addEventListener('click', async () => {
+            const userId = document.getElementById('userActionModal').dataset.userId;
+            const duration = prompt('Введите длительность бана в днях:');
+            const reason = prompt('Введите причину бана:');
+            
+            if (duration && reason) {
+                try {
+                    const response = await fetch('/api/admin/ban', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId,
+                            duration: parseInt(duration),
+                            reason
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        alert('Пользователь забанен');
+                        loadUsers();
+                    } else {
+                        alert(data.error || 'Ошибка при бане пользователя');
+                    }
+                } catch (error) {
+                    alert('Ошибка при бане пользователя');
+                }
+            }
+        });
+
+        // Закрытие модального окна
+        document.querySelector('.close')?.addEventListener('click', () => {
+            document.getElementById('userActionModal').style.display = 'none';
+        });
+
+        // Загрузка пользователей при загрузке страницы
+        loadUsers();
+    </script>
+</body>
+</html> 

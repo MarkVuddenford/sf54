@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль <%= profileUser.username %> - SCP Foundation Forum</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="scp-theme">
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="/images/scp-logo.png" alt="SCP Foundation">
+                <h1>Форум Фонда SCP</h1>
+            </div>
+            <div class="nav-links">
+                <a href="/">Главная</a>
+                <% if (user) { %>
+                    <a href="/profile/<%= user.id %>">Мой профиль</a>
+                    <% if (user.role === 'admin') { %>
+                        <a href="/admin">Панель администратора</a>
+                    <% } %>
+                    <a href="/logout">Выйти</a>
+                <% } %>
+            </div>
+        </nav>
+    </header>
+
+    <main class="profile-container">
+        <div class="profile-header">
+            <div class="profile-info">
+                <h2><%= profileUser.username %></h2>
+                <div class="user-rank">
+                    <span class="rank-badge"><%= profileUser.rank %></span>
+                </div>
+                <div class="user-stats">
+                    <p>На форуме с: <%= new Date(profileUser.join_date).toLocaleDateString() %></p>
+                    <p>Время на форуме: <%= Math.floor(profileUser.forum_time / 60) %> часов</p>
+                </div>
+            </div>
+            <% if (user && user.id !== profileUser.id) { %>
+                <div class="profile-actions">
+                    <button class="btn-primary" id="addFriendBtn">Добавить в друзья</button>
+                    <button class="btn-secondary" id="sendMessageBtn">Отправить сообщение</button>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="profile-content">
+            <div class="profile-section">
+                <h3>Последние темы</h3>
+                <div class="user-topics">
+                    <!-- Здесь будет динамический контент -->
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3>Последние сообщения</h3>
+                <div class="user-posts">
+                    <!-- Здесь будет динамический контент -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Отправить сообщение</h3>
+            <form id="messageForm">
+                <textarea id="messageContent" required></textarea>
+                <button type="submit" class="btn-primary">Отправить</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Обработка отправки сообщения
+        document.getElementById('messageForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const content = document.getElementById('messageContent').value;
+            
+            try {
+                const response = await fetch('/api/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        receiverId: <%= profileUser.id %>,
+                        content: content
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('messageModal').style.display = 'none';
+                    document.getElementById('messageContent').value = '';
+                } else {
+                    alert(data.error || 'Ошибка при отправке сообщения');
+                }
+            } catch (error) {
+                alert('Ошибка при отправке сообщения');
+            }
+        });
+
+        // Обработка добавления в друзья
+        document.getElementById('addFriendBtn')?.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/friends', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        friendId: <%= profileUser.id %>
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Запрос в друзья отправлен');
+                } else {
+                    alert(data.error || 'Ошибка при отправке запроса');
+                }
+            } catch (error) {
+                alert('Ошибка при отправке запроса');
+            }
+        });
+
+        // Модальное окно для сообщений
+        const modal = document.getElementById('messageModal');
+        const btn = document.getElementById('sendMessageBtn');
+        const span = document.getElementsByClassName('close')[0];
+
+        btn?.addEventListener('click', () => {
+            modal.style.display = 'block';
+        });
+
+        span?.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html> 

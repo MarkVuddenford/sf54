@@ -1,0 +1,207 @@
+:root {
+    --primary-color: #1a1a1a;
+    --secondary-color: #2d2d2d;
+    --accent-color: #ff0000;
+    --text-color: #ffffff;
+    --border-color: #404040;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.scp-theme {
+    background: linear-gradient(120deg, #1a1a1a 80%, #2d2d2d 100%);
+    min-height: 100vh;
+}
+
+/* Header */
+header {
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 1rem;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo h1 {
+    font-family: 'Courier New', monospace;
+    color: var(--accent-color);
+    letter-spacing: 2px;
+    font-size: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links button,
+.nav-links a {
+    color: var(--text-color);
+    background: none;
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    margin-left: 0.5rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.nav-links button:hover,
+.nav-links a:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.forum-categories {
+    margin-bottom: 2rem;
+}
+
+.category {
+    background: var(--secondary-color);
+    border-left: 4px solid var(--accent-color);
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px #0004;
+}
+
+.category h3 {
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+.recent-topics {
+    margin-bottom: 2rem;
+}
+
+.topic-list .topic {
+    background: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    box-shadow: 0 2px 8px #0002;
+}
+
+.topic-meta {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 1.5rem;
+}
+
+footer {
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 1rem;
+    text-align: center;
+    border-top: 2px solid var(--accent-color);
+    margin-top: 2rem;
+}
+
+.disclaimer {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 0.5rem;
+}
+
+/* Модальные окна */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: var(--primary-color);
+    color: var(--text-color);
+    padding: 2rem;
+    border-radius: 8px;
+    min-width: 320px;
+    max-width: 90vw;
+    position: relative;
+    box-shadow: 0 4px 32px #000a;
+}
+
+.close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--accent-color);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+input[type=\"text\"], input[type=\"email\"], input[type=\"password\"] {
+    width: 100%;
+    padding: 0.5rem;
+    background: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 3px;
+}
+
+.btn-primary {
+    background: var(--accent-color);
+    color: var(--text-color);
+    border: none;
+    padding: 0.5rem 1.2rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: #cc0000;
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1.2rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+    background: var(--border-color);
+}
